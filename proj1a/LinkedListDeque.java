@@ -44,7 +44,7 @@ public class LinkedListDeque<T> implements List<T> {
     private int size;
 
     public LinkedListDeque() {
-        this.sentinel = new Node<>(null,(T) "null",null);
+        sentinel = new Node<T>(null,(T) "null",null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
         size = 0;
@@ -52,36 +52,17 @@ public class LinkedListDeque<T> implements List<T> {
 
     @Override
     public void addFirst(T item) {
-        if (item == null) {
-            throw new IllegalArgumentException();
-        }
 
-        Node<T> newNode = new Node<>(item);
-        if (this.size == 0){
-            this.addAtEmptyList(newNode);
-        }
-        else {
-            Node<T> current = this.sentinel.getNext();
-            this.sentinel.setNext(newNode);
-            newNode.setPrev(this.sentinel);
-            newNode.setNext(current);
-            current.setPrev(newNode);
-        }
+        sentinel.next = new Node<T>(sentinel,item,sentinel.next);
+        sentinel.next.next.prev = sentinel.next;
+
         this.size++;
     }
 
     @Override
     public void addLast(T item) {
-        Node<T> newNode = new Node<>(item);
-        if (item == null) {
-            throw new IllegalArgumentException();
-        }
-
-        Node<T> current = this.sentinel.getPrev();
-        current.setNext(newNode);
-        newNode.setPrev(current);
-        newNode.setNext(this.sentinel);
-        this.sentinel.setPrev(newNode);
+        sentinel.prev = new Node<>(sentinel.prev,item,sentinel);
+        sentinel.prev.prev.next = sentinel.prev;
 
         this.size++;
     }
@@ -159,22 +140,14 @@ public class LinkedListDeque<T> implements List<T> {
         if (index > size - 1) {
             return null;
         }
-        return recursiveHelper(sentinel.next,index);
+        return getRecursive(sentinel.next,index);
     }
 
-    private T recursiveHelper(Node<T> n, int i) {
+    private T getRecursive(Node<T> n, int i) {
         if (i == 0) {
             return n.getData();
         }
-        return recursiveHelper(n.getNext(), i-1);
-    }
-
-    // helper method
-    private void addAtEmptyList(Node<T> d) {
-        d.setPrev(sentinel);
-        d.setNext(sentinel);
-        sentinel.setNext(d);
-        sentinel.setPrev(d);
+        return getRecursive(n.getNext(), i-1);
     }
 
 
