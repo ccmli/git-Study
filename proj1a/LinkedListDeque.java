@@ -1,4 +1,4 @@
-public class LinkedListDeque<T> implements List<T> {
+public class LinkedListDeque<T>{
 
     private class Node<T> {
         Node<T> prev;
@@ -12,7 +12,7 @@ public class LinkedListDeque<T> implements List<T> {
         }
 
         public Node(T d) {
-            this(null,d,null);
+            this(null , d , null);
         }
 
         public Node<T> getPrev() {
@@ -44,40 +44,35 @@ public class LinkedListDeque<T> implements List<T> {
     private int size;
 
     public LinkedListDeque() {
-        sentinel = new Node<T>(null,(T) "null",null);
+        sentinel = new Node<T>(null, (T) "null", null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
         size = 0;
     }
 
-    @Override
     public void addFirst(T item) {
 
-        sentinel.next = new Node<T>(sentinel,item,sentinel.next);
+        sentinel.next = new Node<T>(sentinel, item, sentinel.next);
         sentinel.next.next.prev = sentinel.next;
 
         this.size++;
     }
 
-    @Override
     public void addLast(T item) {
-        sentinel.prev = new Node<>(sentinel.prev,item,sentinel);
+        sentinel.prev = new Node<>(sentinel.prev, item, sentinel);
         sentinel.prev.prev.next = sentinel.prev;
 
         this.size++;
     }
 
-    @Override
     public boolean isEmpty() {
         return (this.size == 0);
     }
 
-    @Override
     public int size() {
         return this.size;
     }
 
-    @Override
     public void printDeque() {
         Node<T> current = this.sentinel.getNext();
 
@@ -89,19 +84,17 @@ public class LinkedListDeque<T> implements List<T> {
 
     }
 
-    @Override
     public T removeFirst() {
         Node<T> current = this.sentinel.getNext();
 
-            current = current.getNext();
-            current.setPrev(this.sentinel);
-            this.sentinel.setNext(current);
-            this.size--;
+        current = current.getNext();
+        current.setPrev(this.sentinel);
+        this.sentinel.setNext(current);
+        this.size--;
 
         return current.getData();
     }
 
-    @Override
     public T removeLast() {
         Node<T> prevNode = this.sentinel.getPrev();
         prevNode = prevNode.getNext();
@@ -111,7 +104,6 @@ public class LinkedListDeque<T> implements List<T> {
         return prevNode.getData();
     }
 
-    @Override
     public T get(int index) {
         if (index < 0 || index > this.size - 1) {
             throw new IndexOutOfBoundsException("Index is out of bounds.");
@@ -140,22 +132,22 @@ public class LinkedListDeque<T> implements List<T> {
         if (index > size - 1) {
             return null;
         }
-        return getRecursive(sentinel.next,index);
+        return getRecursive(sentinel.next, index);
     }
 
     private T getRecursive(Node<T> n, int i) {
         if (i == 0) {
             return n.getData();
         }
-        return getRecursive(n.getNext(), i-1);
+        return getRecursive(n.getNext(), i - 1);
     }
 
 
-    public Node<T> getFirst() {
+    private Node<T> getFirst() {
         return this.sentinel.next;
     }
 
-    public Node<T> getLast() {
+    private Node<T> getLast() {
         return this.sentinel.prev;
     }
 

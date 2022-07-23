@@ -6,7 +6,7 @@ public class ArrayDeque<T> implements List<T> {
     private final int INITIALSIZE = 8;
     private int firstSize;
     private int lastSize;
-    private final double NARROWRATIO = 1/4;
+    private final double NARROWRATIO = 1 / 4;
 
     public ArrayDeque() {
         aList = (T[]) new Object[INITIALSIZE];
@@ -15,7 +15,6 @@ public class ArrayDeque<T> implements List<T> {
         size = 0;
     }
 
-    @Override
     public void addFirst(T item) {
         if (size == aList.length - 1) {
             resize();
@@ -34,7 +33,6 @@ public class ArrayDeque<T> implements List<T> {
         size++;
     }
 
-    @Override
     public void addLast(T item) {
         if (size == aList.length - 1) {
             resize();
@@ -52,17 +50,17 @@ public class ArrayDeque<T> implements List<T> {
         size++;
     }
 
-    @Override
     public boolean isEmpty() {
         return (size == 0);
     }
 
-    @Override
     public int size() {
+        if (size < 0) {
+            return 0;
+        }
         return size;
     }
 
-    @Override
     public void printDeque() {
         for (int x = nextFirst + 1; x < aList.length; x++) {
             System.out.print(aList[x]+" ");
@@ -72,8 +70,10 @@ public class ArrayDeque<T> implements List<T> {
         }
     }
 
-    @Override
     public T removeFirst() {
+        if (size == 0) {
+            return null;
+        }
 
         // 將 nextFirst移動到想刪除的項目
         if (nextFirst + 1 >= aList.length) {
@@ -83,17 +83,13 @@ public class ArrayDeque<T> implements List<T> {
             nextFirst++;
         }
 
-        // nextFirst == nextLast : 是空的。
-        if (nextFirst == nextLast) {
-            return null;
-        }
 
         T storeData = aList[nextFirst];
         aList[nextFirst] = (T) null;
         this.size--;
 
         // 檢查數組使用空間是否少於25%
-        if (aList.length/2 <= INITIALSIZE
+        if (aList.length / 2 <= INITIALSIZE
             && CURRENTUSAGERATIO() < NARROWRATIO) {
             resize();
         }
@@ -101,8 +97,10 @@ public class ArrayDeque<T> implements List<T> {
         return storeData;
     }
 
-    @Override
     public T removeLast() {
+        if (size == 0) {
+            return null;
+        }
 
         if (nextLast - 1 == -1) {
             nextLast = aList.length - 1;
@@ -111,21 +109,17 @@ public class ArrayDeque<T> implements List<T> {
             nextLast--;
         }
 
-        if (nextFirst == nextLast) {
-            return null;
-        }
         T storeData = aList[nextLast];
         aList[nextLast] = (T) null;
         this.size--;
 
-        if (aList.length/2 <= INITIALSIZE
+        if (aList.length / 2 <= INITIALSIZE
                 && CURRENTUSAGERATIO() < NARROWRATIO) {
             resize();
         }
         return storeData;
     }
 
-    @Override
     public T get(int index) {
         int firstSize = aList.length - nextFirst - 1;
         if (index < firstSize) {
@@ -136,9 +130,9 @@ public class ArrayDeque<T> implements List<T> {
 
     private void resize() {
         if (this.size == aList.length - 1) {
-            resize(aList.length * 3);
+            resize(aList.length * 2);
         }
-        else if (aList.length/2 <= INITIALSIZE
+        else if (aList.length / 2 >= INITIALSIZE
                 && CURRENTUSAGERATIO() < NARROWRATIO) {
             resize(aList.length / 2);
         }
@@ -162,7 +156,7 @@ public class ArrayDeque<T> implements List<T> {
     }
 
     private double CURRENTUSAGERATIO() {
-        return size/aList.length;
+        return size / aList.length;
     }
 
 }
