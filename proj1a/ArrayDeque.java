@@ -1,4 +1,4 @@
-public class ArrayDeque<T> implements List<T> {
+public class ArrayDeque<T> {
     private T[] aList;
     private int nextFirst;
     private int nextLast;
@@ -24,8 +24,7 @@ public class ArrayDeque<T> implements List<T> {
 
         if (nextFirst - 1 < -1) {
             nextFirst = aList.length - 1;
-        }
-        else {
+        } else {
             nextFirst--;
         }
 
@@ -41,8 +40,7 @@ public class ArrayDeque<T> implements List<T> {
         aList[nextLast] = item;
         if (nextLast + 1 >= aList.length) {
             nextLast = 0;
-        }
-        else {
+        } else {
             nextLast++;
         }
 
@@ -63,10 +61,10 @@ public class ArrayDeque<T> implements List<T> {
 
     public void printDeque() {
         for (int x = nextFirst + 1; x < aList.length; x++) {
-            System.out.print(aList[x]+" ");
+            System.out.print(aList[x] + " ");
         }
         for (int x = 0; x < nextLast; x++) {
-            System.out.print(aList[x]+" ");
+            System.out.print(aList[x] + " ");
         }
     }
 
@@ -78,8 +76,7 @@ public class ArrayDeque<T> implements List<T> {
         // 將 nextFirst移動到想刪除的項目
         if (nextFirst + 1 >= aList.length) {
             nextFirst = 0;
-        }
-        else {
+        } else {
             nextFirst++;
         }
 
@@ -87,10 +84,15 @@ public class ArrayDeque<T> implements List<T> {
         T storeData = aList[nextFirst];
         aList[nextFirst] = (T) null;
         this.size--;
+        if (firstSize > 0) {
+            firstSize--;
+        } else {
+            lastSize--;
+        }
 
         // 檢查數組使用空間是否少於25%
-        if (aList.length / 2 <= INITIALSIZE
-            && CURRENTUSAGERATIO() < NARROWRATIO) {
+        if (aList.length > INITIALSIZE
+            && currentUsageRatio() < NARROWRATIO) {
             resize();
         }
 
@@ -104,8 +106,7 @@ public class ArrayDeque<T> implements List<T> {
 
         if (nextLast - 1 == -1) {
             nextLast = aList.length - 1;
-        }
-        else {
+        } else {
             nextLast--;
         }
 
@@ -113,16 +114,27 @@ public class ArrayDeque<T> implements List<T> {
         aList[nextLast] = (T) null;
         this.size--;
 
-        if (aList.length / 2 <= INITIALSIZE
-                && CURRENTUSAGERATIO() < NARROWRATIO) {
+        if (lastSize > 0) {
+            lastSize--;
+        } else {
+            firstSize--;
+        }
+
+        if (aList.length > INITIALSIZE
+                && currentUsageRatio() < NARROWRATIO) {
             resize();
         }
         return storeData;
     }
 
     public T get(int index) {
-        int firstSize = aList.length - nextFirst - 1;
-        if (index < firstSize) {
+        if (index < 0 || index >= size) {
+            return null;
+        }
+
+        if (firstSize == 0) {
+            return aList[index];
+        } else if (index < this.firstSize) {
             return aList[nextFirst + index + 1];
         }
         return aList[index - firstSize];
@@ -131,9 +143,8 @@ public class ArrayDeque<T> implements List<T> {
     private void resize() {
         if (this.size == aList.length - 1) {
             resize(aList.length * 2);
-        }
-        else if (aList.length / 2 >= INITIALSIZE
-                && CURRENTUSAGERATIO() < NARROWRATIO) {
+        } else if (aList.length > INITIALSIZE
+                && currentUsageRatio() < NARROWRATIO) {
             resize(aList.length / 2);
         }
 
@@ -143,9 +154,9 @@ public class ArrayDeque<T> implements List<T> {
         // 將整個舊alist copy到頭，nextLast = size - 1 ; nextFirst = newlist.length - 1;
         T[] newList = (T[]) new Object[capacity];
 
-        System.arraycopy(aList,nextFirst + 1,newList,0, firstSize);
+        System.arraycopy(aList,nextFirst + 1, newList, 0, firstSize);
 
-        System.arraycopy(aList, 0 , newList, firstSize, lastSize);
+        System.arraycopy(aList, 0, newList, firstSize, lastSize);
 
         aList = newList;
         nextFirst = capacity - 1;
@@ -155,7 +166,7 @@ public class ArrayDeque<T> implements List<T> {
         firstSize = 0;
     }
 
-    private double CURRENTUSAGERATIO() {
+    private double currentUsageRatio() {
         return size / aList.length;
     }
 

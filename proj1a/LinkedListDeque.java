@@ -1,4 +1,4 @@
-public class LinkedListDeque<T>{
+public class LinkedListDeque<T> {
 
     private class Node<T> {
         Node<T> prev;
@@ -12,7 +12,7 @@ public class LinkedListDeque<T>{
         }
 
         public Node(T d) {
-            this(null , d , null);
+            this(null, d, null);
         }
 
         public Node<T> getPrev() {
@@ -27,7 +27,7 @@ public class LinkedListDeque<T>{
             return this.data;
         }
 
-        public void setPrev(Node<T> newP){
+        public void setPrev(Node<T> newP) {
             this.prev = newP;
         }
 
@@ -51,7 +51,6 @@ public class LinkedListDeque<T>{
     }
 
     public void addFirst(T item) {
-
         sentinel.next = new Node<T>(sentinel, item, sentinel.next);
         sentinel.next.next.prev = sentinel.next;
 
@@ -77,7 +76,7 @@ public class LinkedListDeque<T>{
         Node<T> current = this.sentinel.getNext();
 
         while (current != sentinel) {
-            System.out.print(current.getData()+ " ");
+            System.out.print(current.getData() + " ");
             current = current.getNext();
         }
         System.out.println(" ");
@@ -111,13 +110,9 @@ public class LinkedListDeque<T>{
 
         if (index == 0) {
             return this.getFirst().getData();
-        }
-
-        else if (index == this.size - 1) {
+        } else if (index == this.size - 1) {
             return this.getLast().getData();
-        }
-
-        else {
+        } else {
             Node<T> current = this.sentinel.getNext();
             int x = 0;
             while (x < index) {
