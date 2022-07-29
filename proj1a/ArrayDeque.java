@@ -108,11 +108,12 @@ public class ArrayDeque<T> {
             resize(item.length / 2);
         }
     }
+
     private void resize(int capacity) {
         T[] newList = (T[]) new Object[capacity];
 
         for (int x = 0; x < size; x++) {
-            newList[x] = item[(nextFirst + 1 + x) % capacity];
+            newList[x] = item[(nextFirst + 1 + x) % item.length];
         }
 
         item = newList;
