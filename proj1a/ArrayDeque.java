@@ -1,6 +1,6 @@
 public class ArrayDeque<T> {
     // constant
-    private static int INI_SIZE = 8;
+    private final static int INI_SIZE = 8;
 
     // instances
     private T[] item;
