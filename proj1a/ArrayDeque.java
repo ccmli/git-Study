@@ -4,8 +4,8 @@ public class ArrayDeque<T> {
 
     // instances
     private T[] item;
-    protected int nextFirst;
-    protected int nextLast;
+    private int nextFirst;
+    private int nextLast;
     private int size;
 
     public ArrayDeque() {
@@ -18,55 +18,53 @@ public class ArrayDeque<T> {
     public void addFirst(T itemToAdd) {
         // addFirst有可能到了index 0 的時候拐回去尾巴
         // （如果不斷addLast再rmFirst,first就會跑到前面去。）
-        resize();
+        if (isFull()) {
+            resize();
+        }
 
         item[nextFirst] = itemToAdd;
         size++;
 
-        if (nextFirst > 0) {
-            nextFirst--;
-        } else {
+        if (nextFirst == 0) {
             nextFirst = item.length - 1;
+        } else {
+            nextFirst--;
         }
     }
 
     public T removeFirst() {
-        resize();
         if (size == 0) {
             return null;
         }
-        if (nextFirst + 1 == item.length) {
-            nextFirst = 0;
-        } else {
-            nextFirst++;
-        }
+        nextFirst = (nextFirst + 1) % item.length;
 
         T storeValue = item[nextFirst];
         item[nextFirst] = null;
         size--;
 
+        if (needResize()) {
+            resize();
+        }
         return storeValue;
     }
 
     public void addLast(T itemToAdd) {
-        resize();
+        if (isFull()) {
+            resize();
+        }
+
         item[nextLast] = itemToAdd;
         size++;
 
-        if (nextLast + 1 == item.length) {
-            nextLast = 0;
-        } else {
-            nextLast++;
-        }
+        nextLast = (nextLast + 1) % item.length;
     }
 
     public T removeLast() {
-        resize();
         if (size == 0) {
             return null;
         }
 
-        if (nextLast - 1 < 0) {
+        if (nextLast == 0) {
             nextLast = item.length - 1;
         } else {
             nextLast--;
@@ -75,6 +73,10 @@ public class ArrayDeque<T> {
         T storeValue = item[nextLast];
         item[nextLast] = null;
         size--;
+
+        if (needResize()) {
+            resize();
+        }
 
         return storeValue;
     }
