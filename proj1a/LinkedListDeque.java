@@ -26,7 +26,7 @@ public class LinkedListDeque<T> {
     }
 
     public void addFirst(T item) {
-        Node newNode = new Node(sentinel, item ,sentinel.next);
+        Node newNode = new Node(sentinel, item, sentinel.next);
 
         if (isEmpty()) {
             sentinel.prev = newNode;
@@ -42,11 +42,11 @@ public class LinkedListDeque<T> {
 
         if (isEmpty()) {
             addFirst(item);
-         } else {
+        } else {
             sentinel.prev.next = newNode;
             sentinel.prev = newNode;
+            this.size++;
         }
-        this.size++;
     }
 
     public void printDeque() {
@@ -124,5 +124,5 @@ public class LinkedListDeque<T> {
     public int size() {
         return this.size;
     }
-    
+
 }
