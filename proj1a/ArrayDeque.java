@@ -1,173 +1,133 @@
 public class ArrayDeque<T> {
-    private T[] aList;
+    // constant
+    private static int INI_SIZE = 8;
+
+    // instances
+    private T[] item;
     private int nextFirst;
     private int nextLast;
     private int size;
-    private final int INITIALSIZE = 8;
-    private int firstSize;
-    private int lastSize;
-    private final double NARROWRATIO = 1 / 4;
 
     public ArrayDeque() {
-        aList = (T[]) new Object[INITIALSIZE];
-        nextFirst = aList.length - 1;
+        item = (T[]) new Object[INI_SIZE];
+        nextFirst = item.length - 1;
         nextLast = 0;
         size = 0;
     }
 
-    public void addFirst(T item) {
-        if (size == aList.length - 1) {
-            resize();
-        }
+    public void addFirst(T itemToAdd) {
+        // addFirst有可能到了index 0 的時候拐回去尾巴
+        // （如果不斷addLast再rmFirst,first就會跑到前面去。）
+        resize();
 
-        aList[nextFirst] = item;
+        item[nextFirst] = itemToAdd;
+        size++;
 
-        if (nextFirst - 1 < -1) {
-            nextFirst = aList.length - 1;
-        } else {
+        if (nextFirst > 0) {
             nextFirst--;
-        }
-
-        firstSize++;
-        size++;
-    }
-
-    public void addLast(T item) {
-        if (size == aList.length - 1) {
-            resize();
-        }
-
-        aList[nextLast] = item;
-        if (nextLast + 1 >= aList.length) {
-            nextLast = 0;
         } else {
-            nextLast++;
-        }
-
-        lastSize++;
-        size++;
-    }
-
-    public boolean isEmpty() {
-        return (size == 0);
-    }
-
-    public int size() {
-        if (size < 0) {
-            return 0;
-        }
-        return size;
-    }
-
-    public void printDeque() {
-        for (int x = nextFirst + 1; x < aList.length; x++) {
-            System.out.print(aList[x] + " ");
-        }
-        for (int x = 0; x < nextLast; x++) {
-            System.out.print(aList[x] + " ");
+            nextFirst = item.length - 1;
         }
     }
 
     public T removeFirst() {
+        resize();
         if (size == 0) {
             return null;
         }
-
-        // 將 nextFirst移動到想刪除的項目
-        if (nextFirst + 1 >= aList.length) {
+        if (nextFirst + 1 == item.length) {
             nextFirst = 0;
         } else {
             nextFirst++;
         }
 
+        T storeValue = item[nextFirst];
+        item[nextFirst] = null;
+        size--;
 
-        T storeData = aList[nextFirst];
-        aList[nextFirst] = (T) null;
-        this.size--;
-        if (firstSize > 0) {
-            firstSize--;
+        return storeValue;
+    }
+
+    public void addLast(T itemToAdd) {
+        resize();
+        item[nextLast] = itemToAdd;
+        size++;
+
+        if (nextLast + 1 == item.length) {
+            nextLast = 0;
         } else {
-            lastSize--;
+            nextLast++;
         }
-
-        // 檢查數組使用空間是否少於25%
-        if (aList.length > INITIALSIZE
-            && currentUsageRatio() < NARROWRATIO) {
-            resize();
-        }
-
-        return storeData;
     }
 
     public T removeLast() {
+        resize();
         if (size == 0) {
             return null;
         }
 
-        if (nextLast - 1 == -1) {
-            nextLast = aList.length - 1;
+        if (nextLast - 1 < 0) {
+            nextLast = item.length - 1;
         } else {
             nextLast--;
         }
 
-        T storeData = aList[nextLast];
-        aList[nextLast] = (T) null;
-        this.size--;
+        T storeValue = item[nextLast];
+        item[nextLast] = null;
+        size--;
 
-        if (lastSize > 0) {
-            lastSize--;
-        } else {
-            firstSize--;
-        }
-
-        if (aList.length > INITIALSIZE
-                && currentUsageRatio() < NARROWRATIO) {
-            resize();
-        }
-        return storeData;
+        return storeValue;
     }
 
     public T get(int index) {
-        if (index < 0 || index >= size) {
+        if (index >= size) {
             return null;
         }
+        return item[(nextFirst + 1 + index) % item.length];
+    }
 
-        if (firstSize == 0) {
-            return aList[index];
-        } else if (index < this.firstSize) {
-            return aList[nextFirst + index + 1];
+    // helper method
+    public int size() {
+        return size;
+    }
+
+    public void printDeque() {
+        for (int x = 0; x < size; x++) {
+            System.out.println(item[(nextFirst + 1 + x) % size]);
         }
-        return aList[index - firstSize];
     }
 
     private void resize() {
-        if (this.size == aList.length - 1) {
-            resize(aList.length * 2);
-        } else if (aList.length > INITIALSIZE
-                && currentUsageRatio() < NARROWRATIO) {
-            resize(aList.length / 2);
+        if (isFull()) {
+            resize(item.length * 2);
         }
 
+        if (needResize()) {
+            resize(item.length / 2);
+        }
     }
-
     private void resize(int capacity) {
-        // 將整個舊alist copy到頭，nextLast = size - 1 ; nextFirst = newlist.length - 1;
         T[] newList = (T[]) new Object[capacity];
 
-        System.arraycopy(aList,nextFirst + 1, newList, 0, firstSize);
+        for (int x = 0; x < size; x++) {
+            newList[x] = item[(nextFirst + 1 + x) % capacity];
+        }
 
-        System.arraycopy(aList, 0, newList, firstSize, lastSize);
-
-        aList = newList;
-        nextFirst = capacity - 1;
+        item = newList;
         nextLast = size;
-
-        lastSize = size;
-        firstSize = 0;
+        nextFirst = capacity - 1;
     }
 
-    private double currentUsageRatio() {
-        return size / aList.length;
+    private boolean isFull() {
+        return (size == item.length);
     }
 
+    private boolean isEmpty() {
+        return (size == 0);
+    }
+
+    private boolean needResize() {
+        return (item.length > 8 &&
+                (size / item.length) < (1/4));
+    }
 }
