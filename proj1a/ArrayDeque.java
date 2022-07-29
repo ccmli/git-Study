@@ -93,7 +93,7 @@ public class ArrayDeque<T> {
 
     public void printDeque() {
         for (int x = 0; x < size; x++) {
-            System.out.println(item[(nextFirst + 1 + x) % size]);
+            System.out.println(item[(nextFirst + 1 + x) % size] + " ");
         }
     }
 
