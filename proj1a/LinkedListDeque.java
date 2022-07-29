@@ -1,67 +1,120 @@
 public class LinkedListDeque<T> {
+    private class Node {
+        Node prev;
+        T item;
+        Node next;
 
-    private class Node<T> {
-        Node<T> prev;
-        T data;
-        Node<T> next;
-
-        public Node(Node<T> p, T d, Node<T> n) {
+        public Node(Node p, T d, Node n) {
             this.prev = p;
-            this.data = d;
+            this.item = d;
             this.next = n;
         }
 
         public Node(T d) {
             this(null, d, null);
         }
-
-        public Node<T> getPrev() {
-            return this.prev;
-        }
-
-        public Node<T> getNext() {
-            return this.next;
-        }
-
-        public T getData() {
-            return this.data;
-        }
-
-        public void setPrev(Node<T> newP) {
-            this.prev = newP;
-        }
-
-        public void setNext(Node<T> newN) {
-            this.next = newN;
-        }
-
-        public void setData(T newData) {
-            this.data = newData;
-        }
     }
 
-    private Node<T> sentinel;
+    private Node sentinel;
     private int size;
 
     public LinkedListDeque() {
-        sentinel = new Node<T>(null, (T) "null", null);
+        sentinel = new Node(null, null, null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
         size = 0;
     }
 
     public void addFirst(T item) {
-        sentinel.next = new Node<T>(sentinel, item, sentinel.next);
-        sentinel.next.next.prev = sentinel.next;
+        Node newNode = new Node(sentinel, item ,sentinel.next);
 
-        this.size++;
+        if (isEmpty()) {
+            sentinel.prev = newNode;
+        } else {
+            sentinel.next.prev = newNode;
+        }
+        sentinel.next = newNode;
+        size++;
     }
 
     public void addLast(T item) {
-        sentinel.prev = new Node<>(sentinel.prev, item, sentinel);
-        sentinel.prev.prev.next = sentinel.prev;
+        Node newNode = new Node(sentinel.prev, item, sentinel);
 
+        if (isEmpty()) {
+            addFirst(item);
+         } else {
+            sentinel.prev.next = newNode;
+            sentinel.prev = newNode;
+        }
         this.size++;
+    }
+
+    public void printDeque() {
+        Node current = sentinel.next;
+
+        while (current != sentinel) {
+            System.out.print(current.item);
+            System.out.print(" ");
+            current = current.next;
+        }
+    }
+
+    public T removeFirst() {
+        if (isEmpty()) {
+            return null;
+        } else {
+            T storeItem = sentinel.next.item;
+            sentinel.next = sentinel.next.next;
+            sentinel.next.prev = sentinel;
+            size--;
+            return storeItem;
+        }
+    }
+
+    public T removeLast() {
+        if (isEmpty()) {
+            return null;
+        } else {
+            T storeItem = sentinel.prev.item;
+            sentinel.prev = sentinel.prev.prev;
+            sentinel.prev.next = sentinel;
+            size--;
+            return storeItem;
+        }
+    }
+
+    public T get(int index) {
+        if (index < 0 || index > this.size - 1) {
+            throw new IndexOutOfBoundsException("Index is out of bounds.");
+        }
+
+        if (index == 0) {
+            return sentinel.next.item;
+        } else if (index == this.size - 1) {
+            return sentinel.prev.item;
+        } else {
+            Node current = sentinel.next;
+            int x = 0;
+            while (x < index) {
+                current = current.next;
+                x++;
+            }
+            return current.item;
+        }
+    }
+
+    public T getRecursive(int index) {
+        if (index == size - 1) {
+            return sentinel.prev.item;
+        }
+        return getRecursive(sentinel.next, index);
+    }
+
+    private T getRecursive(Node n, int i) {
+        if (i == 0) {
+            return n.item;
+        }
+        return getRecursive(n.next, i - 1);
     }
 
     public boolean isEmpty() {
@@ -71,79 +124,5 @@ public class LinkedListDeque<T> {
     public int size() {
         return this.size;
     }
-
-    public void printDeque() {
-        Node<T> current = this.sentinel.getNext();
-
-        while (current != sentinel) {
-            System.out.print(current.getData() + " ");
-            current = current.getNext();
-        }
-        System.out.println(" ");
-
-    }
-
-    public T removeFirst() {
-        Node<T> current = this.sentinel.getNext();
-
-        current = current.getNext();
-        current.setPrev(this.sentinel);
-        this.sentinel.setNext(current);
-        this.size--;
-
-        return current.getData();
-    }
-
-    public T removeLast() {
-        Node<T> prevNode = this.sentinel.getPrev();
-        prevNode = prevNode.getNext();
-        prevNode.setNext(this.sentinel);
-        sentinel.setPrev(prevNode);
-        this.size--;
-        return prevNode.getData();
-    }
-
-    public T get(int index) {
-        if (index < 0 || index > this.size - 1) {
-            throw new IndexOutOfBoundsException("Index is out of bounds.");
-        }
-
-        if (index == 0) {
-            return this.getFirst().getData();
-        } else if (index == this.size - 1) {
-            return this.getLast().getData();
-        } else {
-            Node<T> current = this.sentinel.getNext();
-            int x = 0;
-            while (x < index) {
-                current = current.getNext();
-                x++;
-            }
-            return current.getData();
-        }
-    }
-
-    public T getRecursive(int index) {
-        if (index > size - 1) {
-            return null;
-        }
-        return getRecursive(sentinel.next, index);
-    }
-
-    private T getRecursive(Node<T> n, int i) {
-        if (i == 0) {
-            return n.getData();
-        }
-        return getRecursive(n.getNext(), i - 1);
-    }
-
-
-    private Node<T> getFirst() {
-        return this.sentinel.next;
-    }
-
-    private Node<T> getLast() {
-        return this.sentinel.prev;
-    }
-
+    
 }
