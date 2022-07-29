@@ -1,11 +1,11 @@
 public class ArrayDeque<T> {
     // constant
-    private final static int INI_SIZE = 8;
+    private static final int INI_SIZE = 8;
 
     // instances
     private T[] item;
-    private int nextFirst;
-    private int nextLast;
+    protected int nextFirst;
+    protected int nextLast;
     private int size;
 
     public ArrayDeque() {
@@ -122,12 +122,13 @@ public class ArrayDeque<T> {
         return (size == item.length);
     }
 
-    private boolean isEmpty() {
+    public boolean isEmpty() {
         return (size == 0);
     }
 
     private boolean needResize() {
-        return (item.length > 8 &&
-                (size / item.length) < (1/4));
+        return (item.length > 8
+                && (size / item.length) < (1 / 4));
     }
+
 }
